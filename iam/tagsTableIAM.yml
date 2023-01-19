@@ -1,0 +1,15 @@
+TagsTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    - dynamodb:Query
+    - dynamodb:Scan
+    - dynamodb:UpdateItem
+    - dynamodb:DeleteItem
+    - s3:PutObject
+    - s3:PutObjectAcl
+    - s3:DeleteObject
+  Resource:
+    - ${self:custom.TagsTable.arn}
+    - !Join ['/', ['${self:custom.TagsTable.arn}', 'index', 'name']]

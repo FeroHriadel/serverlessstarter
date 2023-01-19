@@ -1,0 +1,212 @@
+service: starter-backend
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  apiGateway:
+    shouldStartNameWithService: true
+  environment:
+    CATEGORIES_TABLE_NAME: ${self:custom.CategoriesTable.name}
+    USERS_TABLE_NAME: ${self:custom.UsersTable.name}
+    IMAGES_BUCKET_NAME: ${self:custom.ImagesBucket.name} 
+    TAGS_TABLE_NAME: ${self:custom.TagsTable.name}
+    ITEMS_TABLE_NAME: ${self:custom.ItemsTable.name}
+  iam:
+    role:
+      statements:
+        - ${file(./iam/categoriesTableIAM.yml):CategoriesTableIAM}
+        - ${file(./iam/usersTableIAM.yml):UsersTableIAM}
+        - ${file(./iam/imagesBucketIAM.yml):ImagesBucketIAM} 
+        - ${file(./iam/tagsTableIAM.yml):TagsTableIAM}
+        - ${file(./iam/itemsTableIAM.yml):ItemsTableIAM}
+
+resources:
+  Resources:
+    CategoriesTable: ${file(./resources/categoriesTable.yml):CategoriesTable}
+    UsersTable: ${file(./resources/usersTable.yml):UsersTable}
+    ImagesBucket: ${file(./resources/imagesBucket.yml):ImagesBucket} 
+    ImagesBucketPolicy: ${file(./resources/imagesBucket.yml):ImagesBucketPolicy} 
+    TagsTable: ${file(./resources/tagsTable.yml):TagsTable}
+    ItemsTable: ${file(./resources/itemsTable.yml):ItemsTable}
+
+
+functions:
+  #categories:
+  createCategory:
+    handler: functions/categories/createCategory.handler
+    events:
+      - http:
+          path: /createcategory
+          method: POST
+          cors: true
+
+  getCategories:
+    handler: functions/categories/getCategories.handler
+    events:
+      - http:
+          path: /getcategories
+          method: GET
+          cors: true
+
+  getCategory:
+    handler: functions/categories/getCategory.handler
+    events:
+      - http:
+          path: /getcategory/{id}
+          method: GET
+          cors: true
+
+  updateCategory:
+    handler: functions/categories/updateCategory.handler
+    events:
+      - http:
+          path: /updatecategory/{id}
+          method: PUT
+          cors: true
+
+  deleteCategory:
+    handler: functions/categories/deleteCategory.handler
+    events:
+      - http:
+          path: /deletecategory/{id}
+          method: DELETE
+          cors: true
+
+  #users
+  createUser:
+    handler: functions/users/createUser.handler
+    events:
+      - http:
+          path: /createuser
+          method: POST
+          cors: true
+
+  login:
+    handler: functions/users/login.handler
+    events:
+      - http:
+          path: /login
+          method: POST
+          cors: true
+
+  getUserById:
+    handler: functions/users/getUserById.handler
+    events:
+      - http:
+          path: /getuserbyid/{id}
+          method: GET
+          cors: true
+
+  getUsers:
+    handler: functions/users/getUsers.handler
+    events:
+      - http:
+          path: /getusers
+          method: POST
+          cors: true
+
+  searchUsersByEmail:
+    handler: functions/users/searchUsersByEmail.handler
+    events:
+      - http:
+          path: /searchusersbyemail
+          method: POST
+          cors: true
+
+  #preSigned url for image upload 
+  getSignedUrl:
+    handler: functions/getSignedUrl.handler
+    events:
+      - http:
+          method: POST
+          path: /getsignedurl
+          cors: true
+
+  #tags 
+  createTag:
+    handler: functions/tags/createTag.handler
+    events:
+      - http:
+          path: /createtag
+          method: POST
+          cors: true
+  
+  getTags:
+    handler: functions/tags/getTags.handler
+    events:
+      - http:
+          path: /gettags
+          method: GET
+          cors: true
+
+  getTag:
+    handler: functions/tags/getTag.handler
+    events:
+      - http:
+          path: /gettag/{id}
+          method: GET
+          cors: true
+
+  updateTag:
+    handler: functions/tags/updateTag.handler
+    events:
+      - http:
+          path: /updatetag/{id}
+          method: PUT
+          cors: true
+
+  deleteTag:
+    handler: functions/tags/deleteTag.handler
+    events:
+      - http:
+          path: /deletetag/{id}
+          method: DELETE
+          cors: true
+
+  #items
+  createItem:
+    handler: functions/items/createItem.handler
+    events:
+      - http:
+          path: /createitem
+          method: POST
+          cors: true
+
+  getItems:
+    handler: functions/items/getItems.handler
+    events:
+      - http:
+          path: /getitems
+          method: POST
+          cors: true
+
+  getItemById:
+    handler: functions/items/getItemById.handler
+    events:
+      - http:
+          path: /getitem/{id}
+          method: GET
+          cors: true
+
+custom:
+  CategoriesTable:
+    name: !Ref CategoriesTable
+    arn: !GetAtt CategoriesTable.Arn
+  UsersTable:
+    name: !Ref UsersTable
+    arn: !GetAtt UsersTable.Arn
+  ImagesBucket: 
+    name: starter-images-bucket-${self:provider.stage}
+  TagsTable: 
+    name: !Ref TagsTable
+    arn: !GetAtt TagsTable.Arn
+  ItemsTable: 
+    name: !Ref ItemsTable
+    arn: !GetAtt ItemsTable.Arn
+
+
+

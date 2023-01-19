@@ -1,0 +1,12 @@
+CategoriesTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    - dynamodb:Query
+    - dynamodb:Scan
+    - dynamodb:UpdateItem
+    - dynamodb:DeleteItem
+  Resource:
+    - ${self:custom.CategoriesTable.arn}
+    - !Join ['/', ['${self:custom.CategoriesTable.arn}', 'index', 'categoryName']] #if you have GSI (with the IndexName thing) you need to do this.

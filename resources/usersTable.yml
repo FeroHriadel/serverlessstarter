@@ -1,0 +1,40 @@
+# USERS TABLE
+UsersTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: StarterUsersTable-${self:provider.stage}
+    AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: email
+        AttributeType: S
+      - AttributeName: type
+        AttributeType: S
+    BillingMode: PAY_PER_REQUEST
+    KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+    GlobalSecondaryIndexes:
+      - IndexName: email #to search if email already exists
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: emailSort #to order results by email value
+        KeySchema:
+          - AttributeName: type
+            KeyType: HASH
+          - AttributeName: email
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+      - IndexName: wildcard #each user has type: #USER. this will enable you to filter by any parameter you want
+        KeySchema:
+          - AttributeName: type
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+    Tags:
+      - Key: name
+        Value: starter-users-table

@@ -1,0 +1,24 @@
+# CATEGORIES TABLE
+CategoriesTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: StarterCategoriesTable-${self:provider.stage}
+    AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S #string
+      - AttributeName: name #GSI for name
+        AttributeType: S
+    BillingMode: PAY_PER_REQUEST
+    KeySchema:
+      - AttributeName: id
+        KeyType: HASH #if it works like id than you declare it HASH (even if it is a string)
+    GlobalSecondaryIndexes:
+      - IndexName: categoryName #name the GSI somehow
+        KeySchema:
+          - AttributeName: name #the real field name your GSI focuses
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL #you want all other fields included too
+    Tags: #you don't really need this
+      - Key: name
+        Value: starter-categories-table

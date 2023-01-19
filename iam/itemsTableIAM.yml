@@ -1,0 +1,19 @@
+ItemsTableIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:GetItem
+    - dynamodb:PutItem
+    - dynamodb:Query
+    - dynamodb:Scan
+    - dynamodb:UpdateItem
+    - dynamodb:DeleteItem
+    - s3:PutObject
+    - s3:PutObjectAcl
+    - s3:DeleteObject
+  Resource:
+    - ${self:custom.ItemsTable.arn}
+    - !Join ['/', ['${self:custom.ItemsTable.arn}', 'index', 'name']]
+    - !Join ['/', ['${self:custom.ItemsTable.arn}', 'index', 'nameSort']]
+    - !Join ['/', ['${self:custom.ItemsTable.arn}', 'index', 'categorySort']]
+    - !Join ['/', ['${self:custom.ItemsTable.arn}', 'index', 'wildcard']]
+    - !Join ['/', ['${self:custom.ItemsTable.arn}', 'index', 'dateSort']]

@@ -1,0 +1,60 @@
+# ITEMS TABLE
+ItemsTable:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: StarterItemsTable-${self:provider.stage}
+    AttributeDefinitions:
+      - AttributeName: id
+        AttributeType: S
+      - AttributeName: type
+        AttributeType: S
+      - AttributeName: name
+        AttributeType: S
+      - AttributeName: category
+        AttributeType: S
+      - AttributeName: createdAt
+        AttributeType: S
+    BillingMode: PAY_PER_REQUEST
+    KeySchema:
+      - AttributeName: id
+        KeyType: HASH
+    GlobalSecondaryIndexes:
+      - IndexName: name #to search by item.name before a new item is created => to avoid duplicate names
+        KeySchema:
+          - AttributeName: name
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: nameSort #to order by name
+        KeySchema:
+          - AttributeName: type
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+      - IndexName: categorySort #to get by category and order by name
+        KeySchema:
+          - AttributeName: category
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+      - IndexName: wildcard #all items have: type: '#ITEM'. So this is a wildcard that enables you to go thru items and Filter by anything you need (used for 'name' filter here)
+        KeySchema: 
+          - AttributeName: type
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+      - IndexName: dateSort #to order by createdAt
+        KeySchema:
+          - AttributeName: type
+            KeyType: HASH
+          - AttributeName: createdAt
+            KeyType: RANGE
+        Projection:
+          ProjectionType: ALL
+    Tags:
+      - Key: name
+        Value: starter-items-table
